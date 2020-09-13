@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            margin-top: 40vh;
+            overflow: hidden;
+        }
+
+        button {
+            background-color: tomato;
+            color: white;
+            border: none;
+            outline: none;
+            font-weight: 700;
+            padding: 50px 24px;
+            border-radius: 50%;
+            transition: background-color linear 0.2s;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: rgb(253, 139, 119);
+        }
+
+        button:disabled {
+            background-color: thistle;
+        }
+
+        .clicks {
+            margin: 50px;
+            text-align: center;
+        }
+
+        .title {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="main-container">
+            <div class="clicks">
+                <div class="title">
+                    Мои клики
+                </div>
+                <div class="count" id="myCount">
+                    0
+                </div>
+            </div>
+            <div class="button-block">
+                <button id="button">
+                    Жми меня!
+                </button>
+            </div>
+            <div class="clicks">
+                <div class="title">
+                    всего кликов
+                </div>
+                <div class="count" id="allCount">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+
+
+
+        // БЕЙС УРЛ
+        const BASE_URL = 'http://localhost:3000'
+        // 
+
+
+
+        async function initUserMethod() {
+
+            if (!localStorage.getItem('id')) {
+                const url = BASE_URL + '/click/register';
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST', // или 'PUT'
+                        body: JSON.stringify({}), // данные могут быть 'строкой' или {объектом}!
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const json = await response.json();
+                    console.log(json);
+                    localStorage.setItem('id', json.id);
+                    return json
+
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                }
+            } else {
+                const url = BASE_URL +  '/click/login';
+                const data = { id: localStorage.getItem('id') };
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST', // или 'PUT'
+                        body: JSON.stringify(data), // данные могут быть 'строкой' или {объектом}!
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const json = await response.json();
+                    console.log(JSON.stringify(json));
+                    document.getElementById('myCount').innerText = json.count
+                    return json
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                }
+            }
+        }
+        async function getAllCkicks() {
+
+            const url =  BASE_URL + '/click/getAllClicks';
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', // или 'PUT'
+                    body: JSON.stringify({}), // данные могут быть 'строкой' или {объектом}!
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const json = await response.json();
+                console.log(json);
+                document.getElementById('allCount').innerText = json[0].count
+                return json
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        async function getMyClicks() {
+
+            const url =  BASE_URL + '/click/getMyClicks';
+            const data = { id: localStorage.getItem('id') };
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', // или 'PUT'
+                    body: JSON.stringify(data), // данные могут быть 'строкой' или {объектом}!
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const json = await response.json();
+                document.getElementById('myCount').innerText = json
+                return json
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+        async function registerClick() {
+            const url =  BASE_URL + '/click/registerClick';
+            const data = { id: localStorage.getItem('id') };
+            document.getElementById('button').disabled = true;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', // или 'PUT'
+                    body: JSON.stringify(data), // данные могут быть 'строкой' или {объектом}!
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const json = await response.json();
+                console.log(json);
+                document.getElementById('button').disabled = false;
+                return json
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+        window.addEventListener('load', (ev) => {
+            initUserMethod()
+            getAllCkicks()
+            document.getElementById('button').addEventListener('click', ev => {
+                
+
+                getMyClicks().then(v =>{
+                    registerClick()
+                    getAllCkicks()
+                })
+               
+
+            })
+        })
+
+
+    </script>
+</body>
+
+</html>
