@@ -10,7 +10,9 @@ app.use(express.urlencoded({limit: '5000mb',  extended: true, type:'application/
 
 app.use(cors());
 
-
+app.get('/', function(req, res) {
+  res.sendfile('/root/Press-the-button-/index.html');
+});
 // ROUTES IMPORT
 const clickRoute = require('./click')
 app.use('/click', clickRoute)
