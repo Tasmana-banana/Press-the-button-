@@ -17,7 +17,7 @@ app.use('/click', clickRoute)
 
 
 //INIT
-mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
+mongoose.connect("mongodb://localhost:27017/button-app", { useNewUrlParser: true, useUnifiedTopology: true }, () => {
     console.log('conneted')
 })
 app.listen(3000)
